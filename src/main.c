@@ -238,8 +238,10 @@ static void MX_CAN1_Init(void)
   sFilterConfig.FilterBank = 0; // Meaningless for devices with one CAN peripheral. Can be any value from 0-13.
   sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT; // Using 2x 16-bit filters instead of one 32-bit
   sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // In mask mode, both the FilterId and FilterMask are used to decide whether to interrupt. In list mode, only FilterId is used.
-  sFilterConfig.FilterIdHigh = 0x730<<5; // leftshift address by 5. FilterIdHigh is a 16-bit variable. The most significant 11 bits are used as the address.
-  sFilterConfig.FilterIdLow = 0x543<<5; // leftshift address by 5. Don't use this if just using 16-bit FilterScale. Or can use as a 2nd independent 16-bit filter.
+  // 32-bit FilterScale: The FilterId high&low combine to form the full address. Long CAN addresses are 29 bits, so leftshift low part by 3 bits, and high part correspondingly. https://community.st.com/t5/stm32-mcus-embedded-software/can-setup-and-filters-using-hal/td-p/353986
+  // 16-bit FilterScale: FilterIdHigh and FilterIdLow act as two independent 16-bit filters. Since short CAN addresses are 11 bits, and 5 MSBs are taken, left-shift address by 5 bits. 
+  sFilterConfig.FilterIdHigh = 0x730<<5;
+  sFilterConfig.FilterIdLow = 0x543<<5;
   sFilterConfig.FilterMaskIdHigh = 0x0000; // irrelevant when using FilterMode IDLIST
   sFilterConfig.FilterMaskIdLow = 0x0000; // irrelevant when using FilterMode IDLIST
   sFilterConfig.FilterActivation = ENABLE;

@@ -232,16 +232,16 @@ static void MX_CAN1_Init(void)
   }
 
   // filter configuration
-  CAN_FilterTypeDef  sFilterConfig;
+  CAN_FilterTypeDef sFilterConfig;
   sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0; // Can be FIFO0 or FIFO1 
   sFilterConfig.SlaveStartFilterBank = 13; // Meaningless for devices with one CAN peripheral (like ours). devices with one CAN peripheral have 13 filter banks per FIFO.
   sFilterConfig.FilterBank = 0; // Meaningless for devices with one CAN peripheral. Can be any value from 0-13.
   sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT; // Using 2x 16-bit filters instead of one 32-bit
-  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK; // Using mask mode: both the FilterId and FilterMask are used to decide whether to interrupt. In list mode, only FilterId is used.
-  sFilterConfig.FilterIdHigh = 0x0730;
-  sFilterConfig.FilterIdLow = 0x0000;
-  sFilterConfig.FilterMaskIdHigh = 0xFFFF;
-  sFilterConfig.FilterMaskIdLow = 0x0000;
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST; // In mask mode, both the FilterId and FilterMask are used to decide whether to interrupt. In list mode, only FilterId is used.
+  sFilterConfig.FilterIdHigh = 0x730<<5; // leftshift address by 5. FilterIdHigh is a 16-bit variable. The most significant 11 bits are used as the address.
+  sFilterConfig.FilterIdLow = 0x543<<5; // leftshift address by 5. Don't use this if just using 16-bit FilterScale. Or can use as a 2nd independent 16-bit filter.
+  sFilterConfig.FilterMaskIdHigh = 0x0000; // irrelevant when using FilterMode IDLIST
+  sFilterConfig.FilterMaskIdLow = 0x0000; // irrelevant when using FilterMode IDLIST
   sFilterConfig.FilterActivation = ENABLE;
 
   // filter configuration
